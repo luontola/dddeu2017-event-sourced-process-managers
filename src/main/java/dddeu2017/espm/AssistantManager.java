@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AssistantManager implements Handler<Order> {
+public class AssistantManager implements Handler<OrderCooked> {
 
     private static final Logger log = LoggerFactory.getLogger(AssistantManager.class);
 
@@ -27,8 +27,9 @@ public class AssistantManager implements Handler<Order> {
     }
 
     @Override
-    public void handle(Order order) {
+    public void handle(OrderCooked message) {
         log.info("Calculating the totals");
+        Order order = message.order;
         for (Item item : order.items) {
             item.price = pricesByItem.get(item.item);
             order.subtotal += item.price * item.quantity;

@@ -1,8 +1,5 @@
 package dddeu2017.espm.framework;
 
-import dddeu2017.espm.Order;
-
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +18,13 @@ public class TopicBasedPubSub implements Publisher {
         }
     }
 
-    private final Map<String, List<Handler<Order>>> topics = new ConcurrentHashMap<>();
+    private final Map<String, List<Handler<?>>> topics = new ConcurrentHashMap<>();
 
-    public <T> void subscribe(Class<T> topic, Handler<Order> handler) {
+    public <T> void subscribe(Class<T> topic, Handler<T> handler) {
         subscribe(topic.getName(), handler);
     }
 
-    private void subscribe(String topic, Handler<Order> handler) {
+    private void subscribe(String topic, Handler<?> handler) {
         // CopyOnWriteArrayList because subscribe is called rarely, but publish is called a lot
         topics.computeIfAbsent(topic, key -> new CopyOnWriteArrayList<>())
                 .add(handler);
@@ -39,12 +36,10 @@ public class TopicBasedPubSub implements Publisher {
     }
 
     private void publish(String topic, Object message) {
-        List<Handler<Order>> handlers = topics.get(topic);
-        for (Handler<Order> handler : handlers) {
+        List<Handler<?>> handlers = topics.get(topic);
+        for (Handler<?> handler : handlers) {
             try {
-                Field orderField = message.getClass().getDeclaredField("order");
-                Object order = orderField.get(message);
-                handleMethod.invoke(handler, order);
+                handleMethod.invoke(handler, message);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }

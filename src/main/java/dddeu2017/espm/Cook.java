@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Cook implements Handler<Order> {
+public class Cook implements Handler<OrderPlaced> {
 
     private static final Logger log = LoggerFactory.getLogger(Cook.class);
 
@@ -31,8 +31,9 @@ public class Cook implements Handler<Order> {
     }
 
     @Override
-    public void handle(Order order) {
+    public void handle(OrderPlaced message) {
         log.info("{} is making the food", name);
+        Order order = message.order;
         for (Item item : order.items) {
             String ingredients = ingredientsByItem.get(item.item);
             addIngredients(order, ingredients);
