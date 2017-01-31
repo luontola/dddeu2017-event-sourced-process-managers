@@ -1,9 +1,11 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.framework.Repeater;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class Restaurant {
@@ -15,8 +17,12 @@ public class Restaurant {
         OrderPrinter printer = new OrderPrinter();
         Cashier cashier = new Cashier(printer);
         AssistantManager assistantManager = new AssistantManager(cashier);
-        Cook cook = new Cook(assistantManager);
-        Waiter waiter = new Waiter(cook);
+        Repeater cooks = new Repeater(Arrays.asList(
+                new Cook("Tom", assistantManager),
+                new Cook("Dick", assistantManager),
+                new Cook("Harry", assistantManager)
+        ));
+        Waiter waiter = new Waiter(cooks);
         for (int i = 0; i < 10; i++) {
             waiter.placeOrder();
         }

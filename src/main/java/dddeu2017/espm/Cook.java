@@ -18,15 +18,17 @@ public class Cook implements HandlerOrder {
         ingredientsByItem.put("ice cream", "ice cream, chocolate");
     }
 
+    private final String name;
     private final HandlerOrder next;
 
-    public Cook(HandlerOrder next) {
+    public Cook(String name, HandlerOrder next) {
+        this.name = name;
         this.next = next;
     }
 
     @Override
     public void handle(Order order) {
-        log.info("Making the food");
+        log.info("{} is making the food", name);
         for (Item item : order.items) {
             String ingredients = ingredientsByItem.get(item.item);
             addIngredients(order, ingredients);
