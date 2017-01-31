@@ -2,15 +2,18 @@ package dddeu2017.espm.framework;
 
 import dddeu2017.espm.HandlerOrder;
 import dddeu2017.espm.Order;
-import dddeu2017.espm.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class ThreadedHandler implements HandlerOrder {
 
+    private static final Logger log = LoggerFactory.getLogger(ThreadedHandler.class);
+
     private final HandlerOrder handler;
-    private final Queue<Order> queue = new ConcurrentLinkedQueue<>();
+    private final BlockingQueue<Order> queue = new ArrayBlockingQueue<>(100);
 
     public ThreadedHandler(HandlerOrder handler) {
         this.handler = handler;
@@ -18,7 +21,11 @@ public class ThreadedHandler implements HandlerOrder {
 
     @Override
     public void handle(Order order) {
-        queue.add(order);
+        try {
+            queue.put(order);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void start() {
@@ -28,11 +35,13 @@ public class ThreadedHandler implements HandlerOrder {
 
     private void forwardToHandler() {
         while (!Thread.interrupted()) {
-            Order order = queue.poll();
-            if (order != null) {
+            try {
+                Order order = queue.take();
                 handler.handle(order);
-            } else {
-                Util.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (Throwable t) {
+                log.error("Unhandled exception", t);
             }
         }
     }
