@@ -1,10 +1,8 @@
 package dddeu2017.espm.framework;
 
-import dddeu2017.espm.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.time.Instant;
 
 public class TtlChecker<T> implements Handler<T> {
@@ -27,13 +25,11 @@ public class TtlChecker<T> implements Handler<T> {
     }
 
     private Instant expires(T message) {
-        try {
-            // XXX: assumes the existence of an order field in the message
-            Field orderField = message.getClass().getField("order");
-            Order order = (Order) orderField.get(message);
-            return order.expires;
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+        if (message instanceof Expirable) {
+            Expirable m = (Expirable) message;
+            return m.expires();
+        } else {
+            return Instant.MAX;
         }
     }
 }
