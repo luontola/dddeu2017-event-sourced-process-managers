@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public class Application {
+public class Restaurant {
 
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Logger log = LoggerFactory.getLogger(Restaurant.class);
 
     public static void main(String[] args) {
         StopWatch stopWatch = StopWatch.createStarted();
