@@ -12,14 +12,22 @@ public class TopicBasedPubSub implements Publisher {
 
     private final Map<String, List<OrderHandler>> topics = new ConcurrentHashMap<>();
 
-    public void subscribe(String topic, OrderHandler handler) {
+    public <T> void subscribe(Class<T> topic, OrderHandler handler) {
+        subscribe(topic.getName(), handler);
+    }
+
+    private void subscribe(String topic, OrderHandler handler) {
         // CopyOnWriteArrayList because subscribe is called rarely, but publish is called a lot
         topics.computeIfAbsent(topic, key -> new CopyOnWriteArrayList<>())
                 .add(handler);
     }
 
     @Override
-    public void publish(String topic, Order order) {
+    public <T> void publish(Class<T> topic, Order order) {
+        publish(topic.getName(), order);
+    }
+
+    private void publish(String topic, Order order) {
         List<OrderHandler> handlers = topics.get(topic);
         for (OrderHandler handler : handlers) {
             handler.handle(order);

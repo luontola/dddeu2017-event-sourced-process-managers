@@ -4,5 +4,5 @@ import dddeu2017.espm.Order;
 
 public interface Publisher {
 
-    void publish(String topic, Order order);
+    <T> void publish(Class<T> topic, Order order);
 }

@@ -33,10 +33,10 @@ public class Restaurant {
         OrderHandler printer = threaded("OrderPrinter", new OrderPrinter());
 
         // subscribe
-        topics.subscribe("orderPlaced", cooks);
-        topics.subscribe("foodCooked", assistantManager);
-        topics.subscribe("totalsCalculated", cashier);
-        topics.subscribe("orderPaid", printer);
+        topics.subscribe(OrderPlaced.class, cooks);
+        topics.subscribe(OrderCooked.class, assistantManager);
+        topics.subscribe(OrderPriced.class, cashier);
+        topics.subscribe(OrderPaid.class, printer);
 
         // start
         for (ThreadedHandler thread : threads) {
