@@ -1,6 +1,6 @@
 package dddeu2017.espm;
 
-import dddeu2017.espm.framework.Repeater;
+import dddeu2017.espm.framework.RoundRobin;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ public class Restaurant {
         OrderPrinter printer = new OrderPrinter();
         Cashier cashier = new Cashier(printer);
         AssistantManager assistantManager = new AssistantManager(cashier);
-        Repeater cooks = new Repeater(
+        HandlerOrder cooks = new RoundRobin(
                 new Cook("Tom", assistantManager),
                 new Cook("Dick", assistantManager),
                 new Cook("Harry", assistantManager)
