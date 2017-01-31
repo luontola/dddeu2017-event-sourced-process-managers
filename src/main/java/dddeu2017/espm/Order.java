@@ -14,4 +14,5 @@ public class Order extends Struct {
     public int total;
     public int cookTime;
     public String ingredients;
+    public boolean paid;
 }
