@@ -3,6 +3,7 @@ package dddeu2017.espm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -20,6 +21,7 @@ public class Waiter {
         log.info("Placing an order");
         Order order = new Order();
         order.orderId = UUID.randomUUID();
+        order.expires = Instant.now().plusSeconds(15);
         order.tableNumber = ThreadLocalRandom.current().nextInt(1, 20);
 
         Item pancake = new Item();

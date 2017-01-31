@@ -2,6 +2,7 @@ package dddeu2017.espm;
 
 import dddeu2017.espm.framework.MoreFair;
 import dddeu2017.espm.framework.ThreadedHandler;
+import dddeu2017.espm.framework.TtlChecker;
 import dddeu2017.espm.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +24,9 @@ public class Restaurant {
         HandlerOrder cashier = threaded("Cashier", new Cashier(printer));
         HandlerOrder assistantManager = threaded("AssistantManager", new AssistantManager(cashier));
         HandlerOrder cooks = threaded("Dispatch to Cooks", new MoreFair(
-                threaded("Cook Tom", new Cook("Tom", randomCookTime(), assistantManager)),
-                threaded("Cook Dick", new Cook("Dick", randomCookTime(), assistantManager)),
-                threaded("Cook Harry", new Cook("Harry", randomCookTime(), assistantManager))
+                threaded("Cook Tom", new TtlChecker(new Cook("Tom", randomCookTime(), assistantManager))),
+                threaded("Cook Dick", new TtlChecker(new Cook("Dick", randomCookTime(), assistantManager))),
+                threaded("Cook Harry", new TtlChecker(new Cook("Harry", randomCookTime(), assistantManager)))
         ));
         Waiter waiter = new Waiter(cooks);
 
@@ -33,17 +34,15 @@ public class Restaurant {
         for (ThreadedHandler thread : threads) {
             thread.start();
         }
-        new Thread(() -> {
-            while (!Thread.interrupted()) {
-                statusReport();
-                Util.sleep(1000);
-            }
-        }).start();
 
         // use the system
-        for (int i = 0; i < 150; i++) {
+        for (int i = 0; i < 100; i++) {
             waiter.placeOrder();
         }
+        do {
+            Util.sleep(1000);
+            statusReport();
+        } while (!idle());
     }
 
     private static int randomCookTime() {
