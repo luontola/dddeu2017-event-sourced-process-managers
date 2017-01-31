@@ -1,6 +1,6 @@
 package dddeu2017.espm;
 
-import dddeu2017.espm.framework.RoundRobin;
+import dddeu2017.espm.framework.MoreFair;
 import dddeu2017.espm.framework.ThreadedHandler;
 import dddeu2017.espm.util.Util;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class Restaurant {
         HandlerOrder printer = threaded("OrderPrinter", new OrderPrinter());
         HandlerOrder cashier = threaded("Cashier", new Cashier(printer));
         HandlerOrder assistantManager = threaded("AssistantManager", new AssistantManager(cashier));
-        HandlerOrder cooks = threaded("RoundRobin Cook", new RoundRobin(
+        HandlerOrder cooks = threaded("Dispatch to Cooks", new MoreFair(
                 threaded("Cook Tom", new Cook("Tom", randomCookTime(), assistantManager)),
                 threaded("Cook Dick", new Cook("Dick", randomCookTime(), assistantManager)),
                 threaded("Cook Harry", new Cook("Harry", randomCookTime(), assistantManager))
@@ -64,7 +64,7 @@ public class Restaurant {
                 .sum() == 0;
     }
 
-    private static HandlerOrder threaded(String name, HandlerOrder handler) {
+    private static ThreadedHandler threaded(String name, HandlerOrder handler) {
         ThreadedHandler th = new ThreadedHandler(name, handler);
         threads.add(th);
         return th;
