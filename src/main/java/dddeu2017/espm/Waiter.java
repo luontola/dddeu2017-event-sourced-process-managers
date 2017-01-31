@@ -21,6 +21,7 @@ public class Waiter {
         Item item = new Item();
         item.item = "pancake";
         item.quantity = 2;
+        item.price = 10;
 
         Order order = new Order();
         order.orderId = UUID.randomUUID();

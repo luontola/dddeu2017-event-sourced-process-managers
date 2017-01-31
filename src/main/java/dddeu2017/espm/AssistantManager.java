@@ -16,8 +16,10 @@ public class AssistantManager implements HandlerOrder {
     @Override
     public void handle(Order order) {
         log.info("Calculating the totals");
-        order.subtotal = 100;
-        order.tax = 40;
+        for (Item item : order.items) {
+            order.subtotal += item.price * item.quantity;
+        }
+        order.tax = (int) (order.subtotal * 0.25);
         order.total = order.subtotal + order.tax;
         Util.sleep(500);
         next.handle(order);
