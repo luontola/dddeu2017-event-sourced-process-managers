@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Cook implements HandlerOrder {
+public class Cook implements OrderHandler {
 
     private static final Logger log = LoggerFactory.getLogger(Cook.class);
 
@@ -20,9 +20,9 @@ public class Cook implements HandlerOrder {
 
     private final String name;
     private final int cookTime;
-    private final HandlerOrder next;
+    private final OrderHandler next;
 
-    public Cook(String name, int cookTime, HandlerOrder next) {
+    public Cook(String name, int cookTime, OrderHandler next) {
         this.name = name;
         this.cookTime = cookTime;
         this.next = next;

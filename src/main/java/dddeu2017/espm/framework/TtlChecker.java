@@ -1,19 +1,19 @@
 package dddeu2017.espm.framework;
 
-import dddeu2017.espm.HandlerOrder;
 import dddeu2017.espm.Order;
+import dddeu2017.espm.OrderHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
-public class TtlChecker implements HandlerOrder {
+public class TtlChecker implements OrderHandler {
 
     private static final Logger log = LoggerFactory.getLogger(TtlChecker.class);
 
-    private final HandlerOrder handler;
+    private final OrderHandler handler;
 
-    public TtlChecker(HandlerOrder handler) {
+    public TtlChecker(OrderHandler handler) {
         this.handler = handler;
     }
 

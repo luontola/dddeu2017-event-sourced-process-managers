@@ -1,6 +1,6 @@
 package dddeu2017.espm;
 
-public interface HandlerOrder {
+public interface OrderHandler {
 
     void handle(Order order);
 }

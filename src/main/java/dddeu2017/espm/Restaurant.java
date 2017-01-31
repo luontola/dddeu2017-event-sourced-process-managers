@@ -20,10 +20,10 @@ public class Restaurant {
 
     public static void main(String[] args) {
         // wire up the system
-        HandlerOrder printer = threaded("OrderPrinter", new OrderPrinter());
-        HandlerOrder cashier = threaded("Cashier", new Cashier(printer));
-        HandlerOrder assistantManager = threaded("AssistantManager", new AssistantManager(cashier));
-        HandlerOrder cooks = threaded("Dispatch to Cooks", new MoreFair(
+        OrderHandler printer = threaded("OrderPrinter", new OrderPrinter());
+        OrderHandler cashier = threaded("Cashier", new Cashier(printer));
+        OrderHandler assistantManager = threaded("AssistantManager", new AssistantManager(cashier));
+        OrderHandler cooks = threaded("Dispatch to Cooks", new MoreFair(
                 threaded("Cook Tom", new TtlChecker(new Cook("Tom", randomCookTime(), assistantManager))),
                 threaded("Cook Dick", new TtlChecker(new Cook("Dick", randomCookTime(), assistantManager))),
                 threaded("Cook Harry", new TtlChecker(new Cook("Harry", randomCookTime(), assistantManager)))
@@ -64,7 +64,7 @@ public class Restaurant {
                 .sum() == 0;
     }
 
-    private static ThreadedHandler threaded(String name, HandlerOrder handler) {
+    private static ThreadedHandler threaded(String name, OrderHandler handler) {
         ThreadedHandler th = new ThreadedHandler(name, handler);
         threads.add(th);
         return th;

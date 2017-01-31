@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AssistantManager implements HandlerOrder {
+public class AssistantManager implements OrderHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AssistantManager.class);
 
@@ -18,9 +18,9 @@ public class AssistantManager implements HandlerOrder {
         pricesByItem.put("ice cream", 6);
     }
 
-    private final HandlerOrder next;
+    private final OrderHandler next;
 
-    public AssistantManager(HandlerOrder next) {
+    public AssistantManager(OrderHandler next) {
         this.next = next;
     }
 

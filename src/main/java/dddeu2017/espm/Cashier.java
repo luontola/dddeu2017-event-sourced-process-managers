@@ -4,13 +4,13 @@ import dddeu2017.espm.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Cashier implements HandlerOrder {
+public class Cashier implements OrderHandler {
 
     private static final Logger log = LoggerFactory.getLogger(Cashier.class);
 
-    private final HandlerOrder next;
+    private final OrderHandler next;
 
-    public Cashier(HandlerOrder next) {
+    public Cashier(OrderHandler next) {
         this.next = next;
     }
 

@@ -11,9 +11,9 @@ public class Waiter {
 
     private static final Logger log = LoggerFactory.getLogger(Waiter.class);
 
-    private final HandlerOrder next;
+    private final OrderHandler next;
 
-    public Waiter(HandlerOrder next) {
+    public Waiter(OrderHandler next) {
         this.next = next;
     }
 
