@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-public class ThreadedHandler implements HandlerOrder {
+public class ThreadedHandler implements HandlerOrder, Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(ThreadedHandler.class);
 
@@ -29,11 +29,12 @@ public class ThreadedHandler implements HandlerOrder {
     }
 
     public void start() {
-        Thread t = new Thread(this::forwardToHandler);
+        Thread t = new Thread(this);
         t.start();
     }
 
-    private void forwardToHandler() {
+    @Override
+    public void run() {
         while (!Thread.interrupted()) {
             try {
                 Order order = queue.take();
