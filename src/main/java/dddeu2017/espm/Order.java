@@ -1,10 +1,12 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.util.Struct;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Order {
+public class Order extends Struct {
 
     public int tableNumber;
     public List<Item> items = new ArrayList<>();
