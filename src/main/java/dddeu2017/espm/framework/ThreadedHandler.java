@@ -5,8 +5,8 @@ import dddeu2017.espm.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class ThreadedHandler implements HandlerOrder, Runnable {
 
@@ -14,7 +14,7 @@ public class ThreadedHandler implements HandlerOrder, Runnable {
 
     private final String name;
     private final HandlerOrder handler;
-    private final BlockingQueue<Order> queue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Order> queue = new ArrayBlockingQueue<Order>(100);
 
     public ThreadedHandler(String name, HandlerOrder handler) {
         this.name = name;

@@ -33,15 +33,16 @@ public class Restaurant {
         for (ThreadedHandler thread : threads) {
             thread.start();
         }
+        new Thread(() -> {
+            while (!Thread.interrupted()) {
+                statusReport();
+                Util.sleep(1000);
+            }
+        }).start();
 
         // use the system
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 150; i++) {
             waiter.placeOrder();
-        }
-
-        while (!idle()) {
-            Util.sleep(1000);
-            statusReport();
         }
     }
 

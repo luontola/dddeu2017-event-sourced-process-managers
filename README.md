@@ -32,3 +32,14 @@
 - There is no such thing as uniform load (GC, network, disk, context switches etc.), must assume non-uniform workload
     - https://genius.com/James-somers-herokus-ugly-secret-annotated
     - Round robin vs American passport lines
+
+- Queueing strategies
+    - Prefer first
+    - Prefer round-robin
+    - Pinned, e.g. all hamburgers to same cook
+        - Hash the message, put to modulo buckets, each consumer takes from a module of buckets
+- Queues should always be bound, because they are anyways bound by something (memory, disk space), but those bounds are not known and they vary for unknown reasons. Always bind by something explicit.
+    - Bound by number
+    - Bound by time (buffer at most x seconds, TTL)
+        - If message expired, drop it (keep TTL a bit lower than timeout so that the client will know about it)
+    - Block producer vs. drop messages
