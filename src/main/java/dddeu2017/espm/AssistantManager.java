@@ -35,6 +35,6 @@ public class AssistantManager implements OrderHandler {
         order.tax = (int) (order.subtotal * 0.25);
         order.total = order.subtotal + order.tax;
         Util.sleep(500);
-        publisher.publish(OrderPriced.class, order, new OrderPriced(order));
+        publisher.publish(new OrderPriced(order));
     }
 }
