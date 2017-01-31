@@ -23,7 +23,7 @@ public class TopicBasedPubSub implements Publisher {
     }
 
     @Override
-    public <T> void publish(Class<T> topic, Order order) {
+    public <T> void publish(Class<T> topic, Order order, T message) {
         publish(topic.getName(), order);
     }
 

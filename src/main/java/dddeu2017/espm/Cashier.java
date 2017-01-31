@@ -20,6 +20,6 @@ public class Cashier implements OrderHandler {
         log.info("Taking your money");
         Util.sleep(500);
         order.paid = true;
-        publisher.publish(OrderPaid.class, order);
+        publisher.publish(OrderPaid.class, order, new OrderPaid(order));
     }
 }

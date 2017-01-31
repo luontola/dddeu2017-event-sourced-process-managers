@@ -38,7 +38,7 @@ public class Cook implements OrderHandler {
         }
         Util.sleep(cookTime);
         order.cookTime += cookTime;
-        publisher.publish(OrderCooked.class, order);
+        publisher.publish(OrderCooked.class, order, new OrderCooked(order));
     }
 
     private void addIngredients(Order order, String ingredients) {
