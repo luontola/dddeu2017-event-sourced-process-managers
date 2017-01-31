@@ -1,5 +1,6 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.framework.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,10 +12,10 @@ public class Waiter {
 
     private static final Logger log = LoggerFactory.getLogger(Waiter.class);
 
-    private final OrderHandler next;
+    private final Publisher publisher;
 
-    public Waiter(OrderHandler next) {
-        this.next = next;
+    public Waiter(Publisher publisher) {
+        this.publisher = publisher;
     }
 
     public UUID placeOrder() {
@@ -36,7 +37,7 @@ public class Waiter {
             order.items.add(iceCream);
         }
 
-        next.handle(order);
+        publisher.publish("orderPlaced", order);
         return order.orderId;
     }
 }

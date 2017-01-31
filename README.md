@@ -43,3 +43,14 @@
     - Bound by time (buffer at most x seconds, TTL)
         - If message expired, drop it (keep TTL a bit lower than timeout so that the client will know about it)
     - Block producer vs. drop messages
+
+
+# Pub Sub
+
+Starting the system should happen in the following non-overlapping stages. Avoids pains.
+1. Create
+2. Subscribe
+3. Start
+4. Stable
+
+Subscribe may use locks, because it's called rarely. Publish needs to be fast; should be lock-free.

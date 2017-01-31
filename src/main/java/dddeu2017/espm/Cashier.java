@@ -1,5 +1,6 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.framework.Publisher;
 import dddeu2017.espm.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,10 +9,10 @@ public class Cashier implements OrderHandler {
 
     private static final Logger log = LoggerFactory.getLogger(Cashier.class);
 
-    private final OrderHandler next;
+    private final Publisher publisher;
 
-    public Cashier(OrderHandler next) {
-        this.next = next;
+    public Cashier(Publisher publisher) {
+        this.publisher = publisher;
     }
 
     @Override
@@ -19,6 +20,6 @@ public class Cashier implements OrderHandler {
         log.info("Taking your money");
         Util.sleep(500);
         order.paid = true;
-        next.handle(order);
+        publisher.publish("orderPaid", order);
     }
 }

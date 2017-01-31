@@ -2,6 +2,7 @@ package dddeu2017.espm;
 
 import dddeu2017.espm.framework.MoreFair;
 import dddeu2017.espm.framework.ThreadedHandler;
+import dddeu2017.espm.framework.TopicBasedPubSub;
 import dddeu2017.espm.framework.TtlChecker;
 import dddeu2017.espm.util.Util;
 import org.slf4j.Logger;
@@ -19,23 +20,30 @@ public class Restaurant {
     private static List<ThreadedHandler> threads = new ArrayList<>();
 
     public static void main(String[] args) {
-        // wire up the system
-        OrderHandler printer = threaded("OrderPrinter", new OrderPrinter());
-        OrderHandler cashier = threaded("Cashier", new Cashier(printer));
-        OrderHandler assistantManager = threaded("AssistantManager", new AssistantManager(cashier));
+        // create
+        TopicBasedPubSub topics = new TopicBasedPubSub();
+        Waiter waiter = new Waiter(topics);
         OrderHandler cooks = threaded("Dispatch to Cooks", new MoreFair(
-                threaded("Cook Tom", new TtlChecker(new Cook("Tom", randomCookTime(), assistantManager))),
-                threaded("Cook Dick", new TtlChecker(new Cook("Dick", randomCookTime(), assistantManager))),
-                threaded("Cook Harry", new TtlChecker(new Cook("Harry", randomCookTime(), assistantManager)))
+                threaded("Cook Tom", new TtlChecker(new Cook("Tom", randomCookTime(), topics))),
+                threaded("Cook Dick", new TtlChecker(new Cook("Dick", randomCookTime(), topics))),
+                threaded("Cook Harry", new TtlChecker(new Cook("Harry", randomCookTime(), topics)))
         ));
-        Waiter waiter = new Waiter(cooks);
+        OrderHandler assistantManager = threaded("AssistantManager", new AssistantManager(topics));
+        OrderHandler cashier = threaded("Cashier", new Cashier(topics));
+        OrderHandler printer = threaded("OrderPrinter", new OrderPrinter());
 
-        // start the system
+        // subscribe
+        topics.subscribe("orderPlaced", cooks);
+        topics.subscribe("foodCooked", assistantManager);
+        topics.subscribe("totalsCalculated", cashier);
+        topics.subscribe("orderPaid", printer);
+
+        // start
         for (ThreadedHandler thread : threads) {
             thread.start();
         }
 
-        // use the system
+        // steady
         for (int i = 0; i < 100; i++) {
             waiter.placeOrder();
         }

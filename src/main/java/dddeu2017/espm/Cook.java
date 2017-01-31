@@ -1,5 +1,6 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.framework.Publisher;
 import dddeu2017.espm.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +21,12 @@ public class Cook implements OrderHandler {
 
     private final String name;
     private final int cookTime;
-    private final OrderHandler next;
+    private final Publisher publisher;
 
-    public Cook(String name, int cookTime, OrderHandler next) {
+    public Cook(String name, int cookTime, Publisher publisher) {
         this.name = name;
         this.cookTime = cookTime;
-        this.next = next;
+        this.publisher = publisher;
     }
 
     @Override
@@ -37,7 +38,7 @@ public class Cook implements OrderHandler {
         }
         Util.sleep(cookTime);
         order.cookTime += cookTime;
-        next.handle(order);
+        publisher.publish("foodCooked", order);
     }
 
     private void addIngredients(Order order, String ingredients) {

@@ -1,5 +1,6 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.framework.Publisher;
 import dddeu2017.espm.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,10 @@ public class AssistantManager implements OrderHandler {
         pricesByItem.put("ice cream", 6);
     }
 
-    private final OrderHandler next;
+    private final Publisher publisher;
 
-    public AssistantManager(OrderHandler next) {
-        this.next = next;
+    public AssistantManager(Publisher publisher) {
+        this.publisher = publisher;
     }
 
     @Override
@@ -34,6 +35,6 @@ public class AssistantManager implements OrderHandler {
         order.tax = (int) (order.subtotal * 0.25);
         order.total = order.subtotal + order.tax;
         Util.sleep(500);
-        next.handle(order);
+        publisher.publish("totalsCalculated", order);
     }
 }
