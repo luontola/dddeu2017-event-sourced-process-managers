@@ -38,7 +38,7 @@ public class Restaurant {
             waiter.placeOrder();
         }
 
-        while (true) {
+        while (!idle()) {
             Util.sleep(1000);
             statusReport();
         }
@@ -51,6 +51,12 @@ public class Restaurant {
             sj.add("\t" + thread.getCount() + "\t" + thread.getName());
         }
         log.info(sj.toString());
+    }
+
+    private static boolean idle() {
+        return threads.stream()
+                .mapToInt(ThreadedHandler::getCount)
+                .sum() == 0;
     }
 
     private static HandlerOrder threaded(String name, HandlerOrder handler) {
