@@ -18,15 +18,21 @@ public class Waiter {
 
     public UUID placeOrder() {
         log.info("Placing an order");
-        Item item = new Item();
-        item.item = "pancake";
-        item.quantity = 2;
-        item.price = 10;
-
         Order order = new Order();
         order.orderId = UUID.randomUUID();
-        order.items.add(item);
         order.tableNumber = ThreadLocalRandom.current().nextInt(1, 20);
+
+        Item pancake = new Item();
+        pancake.item = "pancake";
+        pancake.quantity = 2;
+        order.items.add(pancake);
+
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            Item iceCream = new Item();
+            iceCream.item = "ice cream";
+            iceCream.quantity = 2;
+            order.items.add(iceCream);
+        }
 
         next.handle(order);
         return order.orderId;

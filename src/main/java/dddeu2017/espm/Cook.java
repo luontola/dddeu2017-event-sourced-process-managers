@@ -13,8 +13,8 @@ public class Cook implements HandlerOrder {
     private static final Map<String, String> ingredientsByItem = new HashMap<>();
 
     static {
-        ingredientsByItem.put("pancake", "flour, milk");
-        ingredientsByItem.put("ice cream", "cream, chocolate");
+        ingredientsByItem.put("pancake", "flour, milk, egg");
+        ingredientsByItem.put("ice cream", "ice cream, chocolate");
     }
 
     private final HandlerOrder next;
