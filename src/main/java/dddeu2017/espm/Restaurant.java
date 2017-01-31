@@ -26,9 +26,9 @@ public class Restaurant {
         TopicBasedPubSub topics = new TopicBasedPubSub();
         Waiter waiter = new Waiter(topics);
         Handler<OrderPlaced> cooks = threaded("Dispatch to Cooks", new MoreFair<>(Arrays.asList(
-                threaded("Cook Tom", new TtlChecker(new Cook("Tom", randomCookTime(), topics))),
-                threaded("Cook Dick", new TtlChecker(new Cook("Dick", randomCookTime(), topics))),
-                threaded("Cook Harry", new TtlChecker(new Cook("Harry", randomCookTime(), topics)))
+                threaded("Cook Tom", new TtlChecker<>(new Cook("Tom", randomCookTime(), topics))),
+                threaded("Cook Dick", new TtlChecker<>(new Cook("Dick", randomCookTime(), topics))),
+                threaded("Cook Harry", new TtlChecker<>(new Cook("Harry", randomCookTime(), topics)))
         )));
         Handler<OrderCooked> assistantManager = threaded("AssistantManager", new AssistantManager(topics));
         Handler<OrderPriced> cashier = threaded("Cashier", new Cashier(topics));
