@@ -1,5 +1,6 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.MoreFair;
 import dddeu2017.espm.framework.ThreadedHandler;
 import dddeu2017.espm.framework.TopicBasedPubSub;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,14 +25,14 @@ public class Restaurant {
         // create
         TopicBasedPubSub topics = new TopicBasedPubSub();
         Waiter waiter = new Waiter(topics);
-        OrderHandler cooks = threaded("Dispatch to Cooks", new MoreFair(
+        Handler<Order> cooks = threaded("Dispatch to Cooks", new MoreFair<>(Arrays.asList(
                 threaded("Cook Tom", new TtlChecker(new Cook("Tom", randomCookTime(), topics))),
                 threaded("Cook Dick", new TtlChecker(new Cook("Dick", randomCookTime(), topics))),
                 threaded("Cook Harry", new TtlChecker(new Cook("Harry", randomCookTime(), topics)))
-        ));
-        OrderHandler assistantManager = threaded("AssistantManager", new AssistantManager(topics));
-        OrderHandler cashier = threaded("Cashier", new Cashier(topics));
-        OrderHandler printer = threaded("OrderPrinter", new OrderPrinter());
+        )));
+        Handler<Order> assistantManager = threaded("AssistantManager", new AssistantManager(topics));
+        Handler<Order> cashier = threaded("Cashier", new Cashier(topics));
+        Handler<Order> printer = threaded("OrderPrinter", new OrderPrinter());
 
         // subscribe
         topics.subscribe(OrderPlaced.class, cooks);
@@ -72,8 +74,8 @@ public class Restaurant {
                 .sum() == 0;
     }
 
-    private static ThreadedHandler threaded(String name, OrderHandler handler) {
-        ThreadedHandler th = new ThreadedHandler(name, handler);
+    private static <T> ThreadedHandler<T> threaded(String name, Handler<T> handler) {
+        ThreadedHandler<T> th = new ThreadedHandler<>(name, handler);
         threads.add(th);
         return th;
     }

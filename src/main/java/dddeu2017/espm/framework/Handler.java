@@ -1,4 +1,4 @@
-package dddeu2017.espm;
+package dddeu2017.espm.framework;
 
 public interface Handler<T> {
 

@@ -1,22 +1,20 @@
 package dddeu2017.espm.framework;
 
-import dddeu2017.espm.Order;
-import dddeu2017.espm.OrderHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ThreadedHandler implements OrderHandler, Runnable {
+public class ThreadedHandler<T> implements Handler<T>, Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(ThreadedHandler.class);
 
     private final String name;
-    private final OrderHandler handler;
-    private final BlockingQueue<Order> queue = new LinkedBlockingQueue<>();
+    private final Handler<T> handler;
+    private final BlockingQueue<T> queue = new LinkedBlockingQueue<>();
 
-    public ThreadedHandler(String name, OrderHandler handler) {
+    public ThreadedHandler(String name, Handler<T> handler) {
         this.name = name;
         this.handler = handler;
     }
@@ -30,9 +28,9 @@ public class ThreadedHandler implements OrderHandler, Runnable {
     }
 
     @Override
-    public void handle(Order order) {
+    public void handle(T message) {
         try {
-            queue.put(order);
+            queue.put(message);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -47,8 +45,8 @@ public class ThreadedHandler implements OrderHandler, Runnable {
     public void run() {
         while (!Thread.interrupted()) {
             try {
-                Order order = queue.take();
-                handler.handle(order);
+                T message = queue.take();
+                handler.handle(message);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (Throwable t) {

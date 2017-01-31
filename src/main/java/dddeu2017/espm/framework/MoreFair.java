@@ -1,35 +1,33 @@
 package dddeu2017.espm.framework;
 
-import dddeu2017.espm.Order;
-import dddeu2017.espm.OrderHandler;
 import dddeu2017.espm.util.Util;
 
-import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
-public class MoreFair implements OrderHandler {
+public class MoreFair<T> implements Handler<T> {
 
-    private final Queue<ThreadedHandler> handlers;
+    private final Queue<ThreadedHandler<T>> handlers;
 
-    public MoreFair(ThreadedHandler... handlers) {
-        this.handlers = new LinkedList<>(Arrays.asList(handlers));
+    public MoreFair(List<ThreadedHandler<T>> handlers) {
+        this.handlers = new LinkedList<>(handlers);
     }
 
     @Override
-    public void handle(Order order) {
+    public void handle(T message) {
         while (true) {
-            ThreadedHandler handler = nextHandler();
+            ThreadedHandler<T> handler = nextHandler();
             if (handler.getCount() < 5) {
-                handler.handle(order);
+                handler.handle(message);
                 return;
             }
             Util.sleep(1);
         }
     }
 
-    private ThreadedHandler nextHandler() {
-        ThreadedHandler handler = handlers.remove();
+    private ThreadedHandler<T> nextHandler() {
+        ThreadedHandler<T> handler = handlers.remove();
         handlers.add(handler);
         return handler;
     }

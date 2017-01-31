@@ -1,5 +1,6 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.Publisher;
 import dddeu2017.espm.util.Util;
 import org.slf4j.Logger;
@@ -8,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AssistantManager implements OrderHandler {
+public class AssistantManager implements Handler<Order> {
 
     private static final Logger log = LoggerFactory.getLogger(AssistantManager.class);
 
