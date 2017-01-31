@@ -19,10 +19,12 @@ public class Cook implements HandlerOrder {
     }
 
     private final String name;
+    private final int cookTime;
     private final HandlerOrder next;
 
-    public Cook(String name, HandlerOrder next) {
+    public Cook(String name, int cookTime, HandlerOrder next) {
         this.name = name;
+        this.cookTime = cookTime;
         this.next = next;
     }
 
@@ -33,7 +35,6 @@ public class Cook implements HandlerOrder {
             String ingredients = ingredientsByItem.get(item.item);
             addIngredients(order, ingredients);
         }
-        int cookTime = 2000;
         Util.sleep(cookTime);
         order.cookTime += cookTime;
         next.handle(order);

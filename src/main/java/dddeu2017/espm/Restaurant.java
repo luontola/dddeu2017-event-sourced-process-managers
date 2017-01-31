@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Restaurant {
 
@@ -22,9 +23,9 @@ public class Restaurant {
         HandlerOrder cashier = threaded("Cashier", new Cashier(printer));
         HandlerOrder assistantManager = threaded("AssistantManager", new AssistantManager(cashier));
         HandlerOrder cooks = threaded("RoundRobin Cook", new RoundRobin(
-                threaded("Cook Tom", new Cook("Tom", assistantManager)),
-                threaded("Cook Dick", new Cook("Dick", assistantManager)),
-                threaded("Cook Harry", new Cook("Harry", assistantManager))
+                threaded("Cook Tom", new Cook("Tom", randomCookTime(), assistantManager)),
+                threaded("Cook Dick", new Cook("Dick", randomCookTime(), assistantManager)),
+                threaded("Cook Harry", new Cook("Harry", randomCookTime(), assistantManager))
         ));
         Waiter waiter = new Waiter(cooks);
 
@@ -42,6 +43,10 @@ public class Restaurant {
             Util.sleep(1000);
             statusReport();
         }
+    }
+
+    private static int randomCookTime() {
+        return ThreadLocalRandom.current().nextInt(1000, 3000);
     }
 
     private static void statusReport() {
