@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public class Order extends Struct {
 
+    public UUID orderId;
     public int tableNumber;
     public List<Item> items = new ArrayList<>();
     public int subtotal;
@@ -15,5 +16,4 @@ public class Order extends Struct {
     public int total;
     public int cookTime;
     public String ingredients;
-    public UUID orderId;
 }
