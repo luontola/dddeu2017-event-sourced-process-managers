@@ -1,5 +1,7 @@
-package dddeu2017.espm;
+package dddeu2017.espm.util;
 
+import dddeu2017.espm.Item;
+import dddeu2017.espm.Order;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.MultilineRecursiveToStringStyle;
