@@ -2,23 +2,29 @@ package dddeu2017.espm;
 
 import dddeu2017.espm.framework.RoundRobin;
 import dddeu2017.espm.framework.ThreadedHandler;
+import dddeu2017.espm.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class Restaurant {
+
+    private static final Logger log = LoggerFactory.getLogger(Restaurant.class);
 
     private static List<ThreadedHandler> threads = new ArrayList<>();
 
     public static void main(String[] args) {
         // wire up the system
-        HandlerOrder printer = threaded(new OrderPrinter());
-        HandlerOrder cashier = threaded(new Cashier(printer));
-        HandlerOrder assistantManager = threaded(new AssistantManager(cashier));
-        HandlerOrder cooks = threaded(new RoundRobin(
-                threaded(new Cook("Tom", assistantManager)),
-                threaded(new Cook("Dick", assistantManager)),
-                threaded(new Cook("Harry", assistantManager))
+        HandlerOrder printer = threaded("OrderPrinter", new OrderPrinter());
+        HandlerOrder cashier = threaded("Cashier", new Cashier(printer));
+        HandlerOrder assistantManager = threaded("AssistantManager", new AssistantManager(cashier));
+        HandlerOrder cooks = threaded("RoundRobin Cook", new RoundRobin(
+                threaded("Cook Tom", new Cook("Tom", assistantManager)),
+                threaded("Cook Dick", new Cook("Dick", assistantManager)),
+                threaded("Cook Harry", new Cook("Harry", assistantManager))
         ));
         Waiter waiter = new Waiter(cooks);
 
@@ -28,13 +34,27 @@ public class Restaurant {
         }
 
         // use the system
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             waiter.placeOrder();
+        }
+
+        while (true) {
+            Util.sleep(1000);
+            statusReport();
         }
     }
 
-    private static HandlerOrder threaded(HandlerOrder handler) {
-        ThreadedHandler th = new ThreadedHandler(handler);
+    private static void statusReport() {
+        StringJoiner sj = new StringJoiner("\n");
+        sj.add("Status report");
+        for (ThreadedHandler thread : threads) {
+            sj.add("\t" + thread.getCount() + "\t" + thread.getName());
+        }
+        log.info(sj.toString());
+    }
+
+    private static HandlerOrder threaded(String name, HandlerOrder handler) {
+        ThreadedHandler th = new ThreadedHandler(name, handler);
         threads.add(th);
         return th;
     }

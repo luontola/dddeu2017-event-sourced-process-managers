@@ -12,11 +12,21 @@ public class ThreadedHandler implements HandlerOrder, Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(ThreadedHandler.class);
 
+    private final String name;
     private final HandlerOrder handler;
     private final BlockingQueue<Order> queue = new ArrayBlockingQueue<>(100);
 
-    public ThreadedHandler(HandlerOrder handler) {
+    public ThreadedHandler(String name, HandlerOrder handler) {
+        this.name = name;
         this.handler = handler;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCount() {
+        return queue.size();
     }
 
     @Override
@@ -29,7 +39,7 @@ public class ThreadedHandler implements HandlerOrder, Runnable {
     }
 
     public void start() {
-        Thread t = new Thread(this);
+        Thread t = new Thread(this, name);
         t.start();
     }
 
