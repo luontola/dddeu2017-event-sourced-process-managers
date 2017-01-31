@@ -19,13 +19,18 @@ public class MoreFair implements HandlerOrder {
     @Override
     public void handle(Order order) {
         while (true) {
-            ThreadedHandler handler = handlers.peek();
-            handlers.add(handlers.remove());
+            ThreadedHandler handler = nextHandler();
             if (handler.getCount() < 5) {
                 handler.handle(order);
                 return;
             }
             Util.sleep(1);
         }
+    }
+
+    private ThreadedHandler nextHandler() {
+        ThreadedHandler handler = handlers.remove();
+        handlers.add(handler);
+        return handler;
     }
 }
