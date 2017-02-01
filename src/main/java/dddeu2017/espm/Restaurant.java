@@ -40,23 +40,6 @@ public class Restaurant {
         topics.subscribe(OrderPriced.class, cashier);
         topics.subscribe(OrderPaid.class, printer);
 
-        topics.subscribe(OrderPlaced.class, new Handler<OrderPlaced>() {
-            boolean first = true;
-
-            @Override
-            public void handle(OrderPlaced message) {
-                if (first) {
-                    first = false;
-                    topics.subscribe(message.correlationId, new Handler<Object>() {
-                        @Override
-                        public void handle(Object message) {
-                            log.info("Received {}", message);
-                        }
-                    });
-                }
-            }
-        });
-
         // start
         for (ThreadedHandler thread : threads) {
             thread.start();
