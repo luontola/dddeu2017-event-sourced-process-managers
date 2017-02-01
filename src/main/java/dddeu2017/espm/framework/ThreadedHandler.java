@@ -46,7 +46,6 @@ public class ThreadedHandler<T> implements Handler<T>, Runnable {
         while (!Thread.interrupted()) {
             try {
                 T message = queue.take();
-                log.trace("Handle message {}", message);
                 handler.handle(message);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
