@@ -1,5 +1,7 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.events.OrderPaid;
+import dddeu2017.espm.events.OrderPriced;
 import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.Publisher;
 import dddeu2017.espm.util.Util;

@@ -1,5 +1,6 @@
 package dddeu2017.espm;
 
+import dddeu2017.espm.events.OrderPlaced;
 import dddeu2017.espm.framework.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
