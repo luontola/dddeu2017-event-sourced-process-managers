@@ -37,9 +37,9 @@ public class TopicBasedPubSub implements Publisher {
     }
 
     @Override
-    public <T> void publish(T message) {
+    public <T extends MessageBase> void publish(T message) {
         publish(message.getClass().getName(), message);
-        publish(((MessageBase) message).correlationId.toString(), message);
+        publish(message.correlationId.toString(), message);
     }
 
     private void publish(String topic, Object message) {
