@@ -1,8 +1,10 @@
 package dddeu2017.espm.framework;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -20,8 +22,12 @@ public class TopicBasedPubSub implements Publisher {
 
     private final Map<String, List<Handler<?>>> topics = new ConcurrentHashMap<>();
 
-    public <T> void subscribe(Class<T> topic, Handler<T> handler) {
-        subscribe(topic.getName(), handler);
+    public <T> void subscribe(Class<T> messageType, Handler<T> handler) {
+        subscribe(messageType.getName(), handler);
+    }
+
+    public void subscribe(UUID correlationId, Handler<?> handler) {
+        subscribe(correlationId.toString(), handler);
     }
 
     private void subscribe(String topic, Handler<?> handler) {
@@ -33,10 +39,11 @@ public class TopicBasedPubSub implements Publisher {
     @Override
     public <T> void publish(T message) {
         publish(message.getClass().getName(), message);
+        publish(((MessageBase) message).correlationId.toString(), message);
     }
 
     private void publish(String topic, Object message) {
-        List<Handler<?>> handlers = topics.get(topic);
+        List<Handler<?>> handlers = topics.getOrDefault(topic, Collections.emptyList());
         for (Handler<?> handler : handlers) {
             try {
                 handleMethod.invoke(handler, message);
