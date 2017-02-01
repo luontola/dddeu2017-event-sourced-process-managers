@@ -4,7 +4,10 @@ import dddeu2017.espm.commands.CookFood;
 import dddeu2017.espm.commands.PriceOrder;
 import dddeu2017.espm.commands.TakePayment;
 import dddeu2017.espm.events.OrderPaid;
+import dddeu2017.espm.events.OrderPlaced;
 import dddeu2017.espm.framework.Handler;
+import dddeu2017.espm.framework.MessageBase;
+import dddeu2017.espm.framework.MidgetHouse;
 import dddeu2017.espm.framework.MoreFair;
 import dddeu2017.espm.framework.ThreadedHandler;
 import dddeu2017.espm.framework.TopicBasedPubSub;
@@ -28,6 +31,9 @@ public class Restaurant {
     public static void main(String[] args) {
         // create
         TopicBasedPubSub topics = new TopicBasedPubSub();
+        MidgetHouse rawMidgetHouse = new MidgetHouse(topics);
+        Handler<MessageBase> midgetHouse = threaded("MidgetHouse", rawMidgetHouse);
+        rawMidgetHouse.setSelf(midgetHouse);
         Waiter waiter = new Waiter(topics);
         Handler<CookFood> cooks = threaded("Dispatch to Cooks", new MoreFair<>(Arrays.asList(
                 threaded("Cook Tom", new TtlChecker<>(new Cook("Tom", randomCookTime(), topics))),
@@ -39,6 +45,7 @@ public class Restaurant {
         Handler<OrderPaid> printer = threaded("OrderPrinter", new OrderPrinter());
 
         // subscribe
+        topics.subscribe(OrderPlaced.class, midgetHouse);
         topics.subscribe(CookFood.class, cooks);
         topics.subscribe(PriceOrder.class, assistantManager);
         topics.subscribe(TakePayment.class, cashier);

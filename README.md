@@ -58,6 +58,7 @@ Subscribe may use locks, because it's called rarely. Publish needs to be fast; s
 ## Correlation and Causation ID
 
 - "What was the external stimuli which caused this even (possibly many levels down)"
+- Easy to build a graph visualizing the message flow
 
 ```
                 Id  CorrId  CauseId      
@@ -66,3 +67,21 @@ OrderCooked     8   19      7
 OrderPriced     9   19      8
 OrderPaid       10  19      9
 ```
+
+## Process Managers
+
+- Pay before eating: needs software changes to all 4 actors (4 microservices, 4 teams) because they all need to change to whom they are sending/receiving messages
+- To form a view of the business process, will need to talk to everybody because they all know just a piece of the puzzle
+- We add a new actor, "midget", who goes to the other actors. The other actors now only need to say when they are done. To pay before eating, only the midget needs a software change.
+- We could have a Dutch midget (pay after eating) and a Zimbabwean midget (pay before eating), chosen for each order separately. For example pay first if the customer looks dodgy.
+- Common design failures of implementing process managers: midget goes to kitchen to cook food, or the cook still talks to other actors. Need proper separation of concerns. Process managers should just be simple state machines which route messages.
+
+- Every process manager gets started by *one* message (e.g. OrderPlaced)
+- On order placed:
+    1. Create midget
+    2. Subscribe to correlation ID
+        - Subscribing the MidgetHouse makes things simpler
+            - wrapped by ThreadedHandler to ensure linearization/single-threadedness
+            - a single place to do tracing etc.
+        - Subscribing the Midget directly may produce concurrency issues (would need to handle linearization somehow)
+- May add event from midget to house "I am done" so that midget can be removed

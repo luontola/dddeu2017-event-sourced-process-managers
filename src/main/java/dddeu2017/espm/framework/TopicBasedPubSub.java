@@ -22,7 +22,7 @@ public class TopicBasedPubSub implements Publisher {
 
     private final Map<String, List<Handler<?>>> topics = new ConcurrentHashMap<>();
 
-    public <T> void subscribe(Class<T> messageType, Handler<T> handler) {
+    public <T> void subscribe(Class<T> messageType, Handler<? super T> handler) {
         subscribe(messageType.getName(), handler);
     }
 
