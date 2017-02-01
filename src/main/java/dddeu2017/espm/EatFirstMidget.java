@@ -5,6 +5,7 @@ import dddeu2017.espm.commands.PriceOrder;
 import dddeu2017.espm.commands.PublishAt;
 import dddeu2017.espm.commands.TakePayment;
 import dddeu2017.espm.events.CookingTimedOut;
+import dddeu2017.espm.events.DuplicateFoodCooked;
 import dddeu2017.espm.events.MidgetFinished;
 import dddeu2017.espm.events.OrderCooked;
 import dddeu2017.espm.events.OrderPaid;
@@ -69,6 +70,7 @@ public class EatFirstMidget implements Handler<MessageBase> {
     private void handle(OrderCooked message) {
         if (cooked) {
             log.warn("[{}] Double cooked order!", message.correlationId);
+            publisher.publish(new DuplicateFoodCooked(message.order, message.correlationId, message.id));
             return;
         }
         cooked = true;
