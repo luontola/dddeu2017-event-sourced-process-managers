@@ -41,10 +41,15 @@ public class MidgetHouse implements Handler<MessageBase> {
     }
 
     private void subscribeNewMidget(OrderPlaced message) {
-        Handler<MessageBase> midget = message.order.dodgy ? new PayFirstMidget(topics) : new EatFirstMidget(topics);
+        Handler<MessageBase> midget = createMidget(message);
         log.trace("Create {} for correlationId={}", midget.getClass().getSimpleName(), message.correlationId);
         midgetsByCorrelationId.put(message.correlationId, midget);
         topics.subscribe(message.correlationId, self);
+    }
+
+    private Handler<MessageBase> createMidget(OrderPlaced message) {
+        // XXX: in a generic framework you would extract this into a MidgetFactory
+        return message.order.dodgy ? new PayFirstMidget(topics) : new EatFirstMidget(topics);
     }
 
     private void delegateToMidget(MessageBase message) {
