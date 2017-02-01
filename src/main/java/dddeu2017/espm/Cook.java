@@ -34,7 +34,7 @@ public class Cook implements Handler<CookFood> {
 
     @Override
     public void handle(CookFood message) {
-        log.info("{} is making the food", name);
+        log.info("[{}] {} is making the food", message.correlationId, name);
         Order order = message.order;
         for (Item item : order.items) {
             String ingredients = ingredientsByItem.get(item.item);

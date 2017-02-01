@@ -2,9 +2,11 @@ package dddeu2017.espm;
 
 import dddeu2017.espm.commands.CookFood;
 import dddeu2017.espm.commands.PriceOrder;
+import dddeu2017.espm.commands.PublishAt;
 import dddeu2017.espm.commands.TakePayment;
 import dddeu2017.espm.events.OrderPaid;
 import dddeu2017.espm.events.OrderPlaced;
+import dddeu2017.espm.framework.AlarmClock;
 import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.MessageBase;
 import dddeu2017.espm.framework.MidgetHouse;
@@ -34,11 +36,12 @@ public class Restaurant {
         MidgetHouse rawMidgetHouse = new MidgetHouse(topics);
         Handler<MessageBase> midgetHouse = threaded("MidgetHouse", rawMidgetHouse);
         rawMidgetHouse.setSelf(midgetHouse);
+        Handler<PublishAt> alarmClock = threaded("AlarmClock", new AlarmClock(topics));
         Waiter waiter = new Waiter(topics);
         Handler<CookFood> cooks = threaded("Dispatch to Cooks", new MoreFair<>(Arrays.asList(
-                threaded("Cook Tom", new TtlChecker<>(new Cook("Tom", randomCookTime(), topics))),
-                threaded("Cook Dick", new TtlChecker<>(new Cook("Dick", randomCookTime(), topics))),
-                threaded("Cook Harry", new TtlChecker<>(new Cook("Harry", randomCookTime(), topics)))
+                threaded("Cook Tom", new TtlChecker<>(new Cook("Tom", 1500, topics))),
+                threaded("Cook Dick", new TtlChecker<>(new Cook("Dick", 2500, topics))),
+                threaded("Cook Harry", new TtlChecker<>(new Cook("Harry", 3000, topics)))
         )));
         Handler<PriceOrder> assistantManager = threaded("AssistantManager", new AssistantManager(topics));
         Handler<TakePayment> cashier = threaded("Cashier", new Cashier(topics));
@@ -46,6 +49,7 @@ public class Restaurant {
 
         // subscribe
         topics.subscribe(OrderPlaced.class, midgetHouse);
+        topics.subscribe(PublishAt.class, alarmClock);
         topics.subscribe(CookFood.class, cooks);
         topics.subscribe(PriceOrder.class, assistantManager);
         topics.subscribe(TakePayment.class, cashier);

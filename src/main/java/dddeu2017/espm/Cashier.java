@@ -20,7 +20,7 @@ public class Cashier implements Handler<TakePayment> {
 
     @Override
     public void handle(TakePayment message) {
-        log.info("Taking your money");
+        log.info("[{}] Taking your money", message.correlationId);
         Order order = message.order;
         Util.sleep(500);
         order.paid = true;

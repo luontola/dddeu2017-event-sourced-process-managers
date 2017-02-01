@@ -85,3 +85,7 @@ OrderPaid       10  19      9
             - a single place to do tracing etc.
         - Subscribing the Midget directly may produce concurrency issues (would need to handle linearization somehow)
 - May add event from midget to house "I am done" so that midget can be removed
+
+- Process manager may never wake up if messages are dropped. Thus must always set an alarm clock. Send your future self a message with state inside it.
+- Unit testing: takes time out of the test. Only order of messages will matter.
+    - When OrderPaid comes, we set paid=true. When PaymentTimedOut comes later, just ignore it because paid==true.

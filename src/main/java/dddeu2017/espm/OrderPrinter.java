@@ -11,6 +11,6 @@ public class OrderPrinter implements Handler<OrderPaid> {
 
     @Override
     public void handle(OrderPaid message) {
-        log.info("{}", message.order);
+        log.info("[{}] Printing the paid order\n{}", message.correlationId, message.order);
     }
 }

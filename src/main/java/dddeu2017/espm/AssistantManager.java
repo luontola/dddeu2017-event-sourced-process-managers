@@ -30,7 +30,7 @@ public class AssistantManager implements Handler<PriceOrder> {
 
     @Override
     public void handle(PriceOrder message) {
-        log.info("Calculating the totals");
+        log.info("[{}] Calculating the totals", message.correlationId);
         Order order = message.order;
         for (Item item : order.items) {
             item.price = pricesByItem.get(item.item);

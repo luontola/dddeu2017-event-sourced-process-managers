@@ -18,7 +18,7 @@ public class TtlChecker<T> implements Handler<T> {
     @Override
     public void handle(T message) {
         if (Instant.now().isAfter(expires(message))) {
-            log.info("Dropping expired order");
+            log.info("[{}] Dropping expired order", ((MessageBase) message).correlationId);
         } else {
             handler.handle(message);
         }

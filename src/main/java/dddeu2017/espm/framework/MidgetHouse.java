@@ -42,7 +42,7 @@ public class MidgetHouse implements Handler<MessageBase> {
 
     private void subscribeNewMidget(OrderPlaced message) {
         Handler<MessageBase> midget = createMidget(message);
-        log.trace("Create {} for correlationId={}", midget.getClass().getSimpleName(), message.correlationId);
+        log.trace("Using {} for correlationId={}", midget.getClass().getSimpleName(), message.correlationId);
         midgetsByCorrelationId.put(message.correlationId, midget);
         topics.subscribe(message.correlationId, self);
     }
@@ -57,7 +57,7 @@ public class MidgetHouse implements Handler<MessageBase> {
         if (midget != null) {
             midget.handle(message);
         } else {
-            log.warn("No midget for message {}", message);
+            log.trace("No midget for message {}", message);
         }
     }
 
