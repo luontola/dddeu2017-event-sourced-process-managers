@@ -110,3 +110,4 @@ OrderPaid       10  19      9
 
 - On new event, replay all events which have happened before.
     - Events to a PM usually happen closely together, so in production it's useful to cache the PM instances.  
+- For replicated PMs, will need to use deterministic GUIDs as message IDs for commands sent by PMs. Calculate the commands's ID by hashing the triggering event's ID.
