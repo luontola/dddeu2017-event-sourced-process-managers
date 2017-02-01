@@ -89,3 +89,5 @@ OrderPaid       10  19      9
 - Process manager may never wake up if messages are dropped. Thus must always set an alarm clock. Send your future self a message with state inside it.
 - Unit testing: takes time out of the test. Only order of messages will matter.
     - When OrderPaid comes, we set paid=true. When PaymentTimedOut comes later, just ignore it because paid==true.
+
+- Job of a process manager is to take a task to a known end state. It doesn't have to be a success state. Manual intervention is a possibility; no need to automate everything. What is the break-even point of a developer working a couple of days to automate something, which happens once a month and a human can resolve in 15 minutes.

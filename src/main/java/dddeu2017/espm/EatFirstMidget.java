@@ -56,7 +56,7 @@ public class EatFirstMidget implements Handler<MessageBase> {
             return;
         }
         if (message.tries >= 3) {
-            log.info("[{}] Tried to cook 3 times, giving up", message.correlationId);
+            log.warn("[{}] Tried to cook 3 times, giving up!", message.correlationId);
             return;
         }
         log.info("[{}] Retry cooking", message.correlationId);
@@ -68,7 +68,7 @@ public class EatFirstMidget implements Handler<MessageBase> {
 
     private void handle(OrderCooked message) {
         if (cooked) {
-            log.info("[{}] Already cooked before", message.correlationId);
+            log.warn("[{}] Double cooked order!", message.correlationId);
             return;
         }
         cooked = true;
