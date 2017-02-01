@@ -1,5 +1,7 @@
 package dddeu2017.espm.framework;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import dddeu2017.espm.EatFirstMidget;
 import dddeu2017.espm.PayFirstMidget;
 import dddeu2017.espm.events.MidgetFinished;
@@ -57,19 +59,36 @@ public class MidgetHouse implements Handler<MessageBase> {
         List<MessageBase> history = topics.historyForTopic(message.correlationId);
         Class<? extends Midget> midgetType = midgetTypesByCorrelationId.get(message.correlationId);
         if (midgetType != null) {
-            Midget midget;
-            try {
-                midget = midgetType.newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
-            midget.setPublisher(new NullPublisher());
-            history.forEach(midget::handle);
-            midget.setPublisher(topics);
+            Midget midget = loadMidget(midgetType, history);
             midget.handle(message);
         } else {
             log.trace("No midget for message {}", message);
         }
+    }
+
+    private Midget loadMidget(Class<? extends Midget> midgetType, List<MessageBase> history) {
+        Midget midget;
+        try {
+            midget = midgetType.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+
+        // silence the logger
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        ch.qos.logback.classic.Logger midgetLogger = lc.getLogger(midgetType);
+        Level originalLevel = midgetLogger.getLevel();
+        midgetLogger.setLevel(Level.OFF);
+        try {
+            // replay old events
+            midget.setPublisher(new NullPublisher());
+            history.forEach(midget::handle);
+            midget.setPublisher(topics);
+        } finally {
+            // restore the logger
+            midgetLogger.setLevel(originalLevel);
+        }
+        return midget;
     }
 
     private void killMidget(MidgetFinished message) {
