@@ -1,6 +1,7 @@
 package dddeu2017.espm.framework;
 
 import dddeu2017.espm.Midget;
+import dddeu2017.espm.events.MidgetFinished;
 import dddeu2017.espm.events.OrderPlaced;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,16 +28,32 @@ public class MidgetHouse implements Handler<MessageBase> {
 
     @Override
     public void handle(MessageBase message) {
-        log.trace("Handle message id={} correlationId={} causationId={}\n{}", message.id, message.correlationId, message.causationId, message);
+        log.trace("Handle message {} id={} correlationId={} causationId={}",
+                message.getClass().getSimpleName(), message.id, message.correlationId, message.causationId);
         if (message instanceof OrderPlaced) {
             subscribeNewMidget((OrderPlaced) message);
         }
-        Midget midget = midgetsByCorrelationId.get(message.correlationId);
-        midget.handle(message);
+        delegateToMidget(message);
+        if (message instanceof MidgetFinished) {
+            killMidget((MidgetFinished) message);
+        }
     }
 
     private void subscribeNewMidget(OrderPlaced message) {
         midgetsByCorrelationId.put(message.correlationId, new Midget(topics));
         topics.subscribe(message.correlationId, self);
+    }
+
+    private void delegateToMidget(MessageBase message) {
+        Midget midget = midgetsByCorrelationId.get(message.correlationId);
+        if (midget != null) {
+            midget.handle(message);
+        } else {
+            log.warn("No midget for message {}", message);
+        }
+    }
+
+    private void killMidget(MidgetFinished message) {
+        midgetsByCorrelationId.remove(message.correlationId);
     }
 }

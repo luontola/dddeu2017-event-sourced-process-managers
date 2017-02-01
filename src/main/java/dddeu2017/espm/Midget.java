@@ -3,7 +3,9 @@ package dddeu2017.espm;
 import dddeu2017.espm.commands.CookFood;
 import dddeu2017.espm.commands.PriceOrder;
 import dddeu2017.espm.commands.TakePayment;
+import dddeu2017.espm.events.MidgetFinished;
 import dddeu2017.espm.events.OrderCooked;
+import dddeu2017.espm.events.OrderPaid;
 import dddeu2017.espm.events.OrderPlaced;
 import dddeu2017.espm.events.OrderPriced;
 import dddeu2017.espm.framework.Handler;
@@ -26,6 +28,8 @@ public class Midget implements Handler<MessageBase> {
             handle((OrderCooked) message);
         } else if (message instanceof OrderPriced) {
             handle((OrderPriced) message);
+        } else if (message instanceof OrderPaid) {
+            handle((OrderPaid) message);
         }
     }
 
@@ -39,5 +43,9 @@ public class Midget implements Handler<MessageBase> {
 
     private void handle(OrderPriced message) {
         publisher.publish(new TakePayment(message.order, message.correlationId, message.id));
+    }
+
+    private void handle(OrderPaid message) {
+        publisher.publish(new MidgetFinished(message.correlationId, message.id));
     }
 }
