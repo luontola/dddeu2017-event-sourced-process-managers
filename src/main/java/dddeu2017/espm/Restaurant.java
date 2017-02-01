@@ -1,9 +1,9 @@
 package dddeu2017.espm;
 
-import dddeu2017.espm.events.OrderCooked;
+import dddeu2017.espm.commands.CookFood;
+import dddeu2017.espm.commands.PriceOrder;
+import dddeu2017.espm.commands.TakePayment;
 import dddeu2017.espm.events.OrderPaid;
-import dddeu2017.espm.events.OrderPlaced;
-import dddeu2017.espm.events.OrderPriced;
 import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.MoreFair;
 import dddeu2017.espm.framework.ThreadedHandler;
@@ -29,19 +29,19 @@ public class Restaurant {
         // create
         TopicBasedPubSub topics = new TopicBasedPubSub();
         Waiter waiter = new Waiter(topics);
-        Handler<OrderPlaced> cooks = threaded("Dispatch to Cooks", new MoreFair<>(Arrays.asList(
+        Handler<CookFood> cooks = threaded("Dispatch to Cooks", new MoreFair<>(Arrays.asList(
                 threaded("Cook Tom", new TtlChecker<>(new Cook("Tom", randomCookTime(), topics))),
                 threaded("Cook Dick", new TtlChecker<>(new Cook("Dick", randomCookTime(), topics))),
                 threaded("Cook Harry", new TtlChecker<>(new Cook("Harry", randomCookTime(), topics)))
         )));
-        Handler<OrderCooked> assistantManager = threaded("AssistantManager", new AssistantManager(topics));
-        Handler<OrderPriced> cashier = threaded("Cashier", new Cashier(topics));
+        Handler<PriceOrder> assistantManager = threaded("AssistantManager", new AssistantManager(topics));
+        Handler<TakePayment> cashier = threaded("Cashier", new Cashier(topics));
         Handler<OrderPaid> printer = threaded("OrderPrinter", new OrderPrinter());
 
         // subscribe
-        topics.subscribe(OrderPlaced.class, cooks);
-        topics.subscribe(OrderCooked.class, assistantManager);
-        topics.subscribe(OrderPriced.class, cashier);
+        topics.subscribe(CookFood.class, cooks);
+        topics.subscribe(PriceOrder.class, assistantManager);
+        topics.subscribe(TakePayment.class, cashier);
         topics.subscribe(OrderPaid.class, printer);
 
         // start

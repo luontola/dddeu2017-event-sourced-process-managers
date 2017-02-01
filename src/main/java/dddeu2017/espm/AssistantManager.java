@@ -1,6 +1,6 @@
 package dddeu2017.espm;
 
-import dddeu2017.espm.events.OrderCooked;
+import dddeu2017.espm.commands.PriceOrder;
 import dddeu2017.espm.events.OrderPriced;
 import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.Publisher;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AssistantManager implements Handler<OrderCooked> {
+public class AssistantManager implements Handler<PriceOrder> {
 
     private static final Logger log = LoggerFactory.getLogger(AssistantManager.class);
 
@@ -29,7 +29,7 @@ public class AssistantManager implements Handler<OrderCooked> {
     }
 
     @Override
-    public void handle(OrderCooked message) {
+    public void handle(PriceOrder message) {
         log.info("Calculating the totals");
         Order order = message.order;
         for (Item item : order.items) {
