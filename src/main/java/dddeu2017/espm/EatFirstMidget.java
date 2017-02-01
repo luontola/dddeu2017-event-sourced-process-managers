@@ -6,27 +6,25 @@ import dddeu2017.espm.commands.PublishAt;
 import dddeu2017.espm.commands.TakePayment;
 import dddeu2017.espm.events.CookingTimedOut;
 import dddeu2017.espm.events.DuplicateFoodCooked;
+import dddeu2017.espm.events.GaveUpOnRetryingCooking;
 import dddeu2017.espm.events.MidgetFinished;
 import dddeu2017.espm.events.OrderCooked;
 import dddeu2017.espm.events.OrderPaid;
 import dddeu2017.espm.events.OrderPlaced;
 import dddeu2017.espm.events.OrderPriced;
-import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.MessageBase;
+import dddeu2017.espm.framework.Midget;
 import dddeu2017.espm.framework.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
-public class EatFirstMidget implements Handler<MessageBase> {
+public class EatFirstMidget implements Midget {
 
-    private static final Logger log = LoggerFactory.getLogger(EatFirstMidget.class);
-
-    private final Publisher publisher;
+    private Publisher publisher;
     private boolean cooked = false;
 
-    public EatFirstMidget(Publisher publisher) {
+    @Override
+    public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
     }
 
@@ -57,10 +55,9 @@ public class EatFirstMidget implements Handler<MessageBase> {
             return;
         }
         if (message.tries >= 3) {
-            log.warn("[{}] Tried to cook 3 times, giving up!", message.correlationId);
+            publisher.publish(new GaveUpOnRetryingCooking(message.order, message.correlationId, message.id));
             return;
         }
-        log.info("[{}] Retry cooking", message.correlationId);
         publisher.publish(new CookFood(message.order, message.correlationId, message.id));
         publisher.publish(new PublishAt(Instant.now().plusSeconds(10),
                 new CookingTimedOut(message.order, message.tries + 1, message.correlationId, message.id),
@@ -69,7 +66,6 @@ public class EatFirstMidget implements Handler<MessageBase> {
 
     private void handle(OrderCooked message) {
         if (cooked) {
-            log.warn("[{}] Double cooked order!", message.correlationId);
             publisher.publish(new DuplicateFoodCooked(message.order, message.correlationId, message.id));
             return;
         }

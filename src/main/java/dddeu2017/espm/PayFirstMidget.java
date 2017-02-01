@@ -8,15 +8,16 @@ import dddeu2017.espm.events.OrderCooked;
 import dddeu2017.espm.events.OrderPaid;
 import dddeu2017.espm.events.OrderPlaced;
 import dddeu2017.espm.events.OrderPriced;
-import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.MessageBase;
+import dddeu2017.espm.framework.Midget;
 import dddeu2017.espm.framework.Publisher;
 
-public class PayFirstMidget implements Handler<MessageBase> {
+public class PayFirstMidget implements Midget {
 
-    private final Publisher publisher;
+    private Publisher publisher;
 
-    public PayFirstMidget(Publisher publisher) {
+    @Override
+    public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
     }
 

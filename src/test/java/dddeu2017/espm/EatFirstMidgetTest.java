@@ -25,7 +25,8 @@ public class EatFirstMidgetTest {
 
     @Test
     public void when_food_is_cooked_in_time() {
-        EatFirstMidget midget = new EatFirstMidget(publisher);
+        EatFirstMidget midget = new EatFirstMidget();
+        midget.setPublisher(publisher);
         midget.handle(new OrderPlaced(order, correlationId, UUID.randomUUID()));
         MessageBase timeout = publisher.getTimeoutMessage();
         publisher.clear();
@@ -38,7 +39,8 @@ public class EatFirstMidgetTest {
 
     @Test
     public void when_food_is_not_cooked_in_time() {
-        EatFirstMidget midget = new EatFirstMidget(publisher);
+        EatFirstMidget midget = new EatFirstMidget();
+        midget.setPublisher(publisher);
         midget.handle(new OrderPlaced(order, correlationId, UUID.randomUUID()));
         MessageBase timeout = publisher.getTimeoutMessage();
         publisher.clear();

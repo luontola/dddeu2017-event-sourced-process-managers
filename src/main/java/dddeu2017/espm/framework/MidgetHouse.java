@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public class MidgetHouse implements Handler<MessageBase> {
 
     private static final Logger log = LoggerFactory.getLogger(MidgetHouse.class);
 
-    private final Map<UUID, Handler<MessageBase>> midgetsByCorrelationId = new HashMap<>();
+    private final Map<UUID, Class<? extends Midget>> midgetTypesByCorrelationId = new HashMap<>();
     private final TopicBasedPubSub topics;
     private Handler<MessageBase> self;
 
@@ -41,20 +42,30 @@ public class MidgetHouse implements Handler<MessageBase> {
     }
 
     private void subscribeNewMidget(OrderPlaced message) {
-        Handler<MessageBase> midget = createMidget(message);
+        Midget midget = createMidget(message);
         log.trace("Using {} for correlationId={}", midget.getClass().getSimpleName(), message.correlationId);
-        midgetsByCorrelationId.put(message.correlationId, midget);
+        midgetTypesByCorrelationId.put(message.correlationId, midget.getClass());
         topics.subscribe(message.correlationId, self);
     }
 
-    private Handler<MessageBase> createMidget(OrderPlaced message) {
+    private Midget createMidget(OrderPlaced message) {
         // XXX: in a generic framework you would extract this into a MidgetFactory
-        return message.order.dodgy ? new PayFirstMidget(topics) : new EatFirstMidget(topics);
+        return message.order.dodgy ? new PayFirstMidget() : new EatFirstMidget();
     }
 
     private void delegateToMidget(MessageBase message) {
-        Handler<MessageBase> midget = midgetsByCorrelationId.get(message.correlationId);
-        if (midget != null) {
+        List<MessageBase> history = topics.historyForTopic(message.correlationId);
+        Class<? extends Midget> midgetType = midgetTypesByCorrelationId.get(message.correlationId);
+        if (midgetType != null) {
+            Midget midget;
+            try {
+                midget = midgetType.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+            midget.setPublisher(new NullPublisher());
+            history.forEach(midget::handle);
+            midget.setPublisher(topics);
             midget.handle(message);
         } else {
             log.trace("No midget for message {}", message);
@@ -62,6 +73,6 @@ public class MidgetHouse implements Handler<MessageBase> {
     }
 
     private void killMidget(MidgetFinished message) {
-        midgetsByCorrelationId.remove(message.correlationId);
+        midgetTypesByCorrelationId.remove(message.correlationId);
     }
 }
