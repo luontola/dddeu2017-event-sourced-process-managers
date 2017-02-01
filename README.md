@@ -91,3 +91,10 @@ OrderPaid       10  19      9
     - When OrderPaid comes, we set paid=true. When PaymentTimedOut comes later, just ignore it because paid==true.
 
 - Job of a process manager is to take a task to a known end state. It doesn't have to be a success state. Manual intervention is a possibility; no need to automate everything. What is the break-even point of a developer working a couple of days to automate something, which happens once a month and a human can resolve in 15 minutes.
+
+## Event Sourced Process Managers
+
+- Versioning strategies for process managers:
+    - Release new PM, use it for new processes, use the old PM for old processes
+    - What if the process lasts 9 months? Need to migrate the process. 
+- Event sourcing makes it easier to upgrade the PMs. On new event, replay all events which have happened before.  
