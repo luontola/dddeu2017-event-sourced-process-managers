@@ -20,6 +20,7 @@ public class Order {
     public int cookTime;
     public String ingredients;
     public boolean paid;
+    public boolean dodgy;
 
     @Override
     public String toString() {

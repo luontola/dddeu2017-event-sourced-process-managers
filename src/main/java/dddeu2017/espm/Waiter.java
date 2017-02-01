@@ -25,6 +25,7 @@ public class Waiter {
         order.orderId = UUID.randomUUID();
         order.expires = Instant.now().plusSeconds(15);
         order.tableNumber = ThreadLocalRandom.current().nextInt(1, 20);
+        order.dodgy = ThreadLocalRandom.current().nextBoolean();
 
         Item pancake = new Item();
         pancake.item = "pancake";

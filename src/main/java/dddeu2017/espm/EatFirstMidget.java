@@ -12,11 +12,11 @@ import dddeu2017.espm.framework.Handler;
 import dddeu2017.espm.framework.MessageBase;
 import dddeu2017.espm.framework.Publisher;
 
-public class Midget implements Handler<MessageBase> {
+public class EatFirstMidget implements Handler<MessageBase> {
 
     private final Publisher publisher;
 
-    public Midget(Publisher publisher) {
+    public EatFirstMidget(Publisher publisher) {
         this.publisher = publisher;
     }
 
