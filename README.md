@@ -45,7 +45,7 @@
     - Block producer vs. drop messages
 
 
-# Pub Sub
+## Pub Sub
 
 Starting the system should happen in the following non-overlapping stages. Avoids pains.
 1. Create
@@ -54,3 +54,15 @@ Starting the system should happen in the following non-overlapping stages. Avoid
 4. Stable
 
 Subscribe may use locks, because it's called rarely. Publish needs to be fast; should be lock-free.
+
+## Correlation and Causation ID
+
+- "What was the external stimuli which caused this even (possibly many levels down)"
+
+```
+                Id  CorrId  CauseId      
+OrderPlaced     7   19      -1
+OrderCooked     8   19      7
+OrderPriced     9   19      8
+OrderPaid       10  19      9
+```

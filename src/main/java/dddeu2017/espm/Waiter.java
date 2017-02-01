@@ -37,7 +37,7 @@ public class Waiter {
             order.items.add(iceCream);
         }
 
-        publisher.publish(new OrderPlaced(order));
+        publisher.publish(new OrderPlaced(order, UUID.randomUUID(), null));
         return order.orderId;
     }
 }

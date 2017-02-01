@@ -22,6 +22,6 @@ public class Cashier implements Handler<OrderPriced> {
         Order order = message.order;
         Util.sleep(500);
         order.paid = true;
-        publisher.publish(new OrderPaid(order));
+        publisher.publish(new OrderPaid(order, message.correlationId, message.id));
     }
 }

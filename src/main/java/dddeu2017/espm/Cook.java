@@ -40,7 +40,7 @@ public class Cook implements Handler<OrderPlaced> {
         }
         Util.sleep(cookTime);
         order.cookTime += cookTime;
-        publisher.publish(new OrderCooked(order));
+        publisher.publish(new OrderCooked(order, message.correlationId, message.id));
     }
 
     private void addIngredients(Order order, String ingredients) {

@@ -37,6 +37,6 @@ public class AssistantManager implements Handler<OrderCooked> {
         order.tax = (int) (order.subtotal * 0.25);
         order.total = order.subtotal + order.tax;
         Util.sleep(500);
-        publisher.publish(new OrderPriced(order));
+        publisher.publish(new OrderPriced(order, message.correlationId, message.id));
     }
 }
