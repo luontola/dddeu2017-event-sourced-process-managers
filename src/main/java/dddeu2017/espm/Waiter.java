@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static dddeu2017.espm.util.Util.newUUID;
+
 public class Waiter {
 
     private static final Logger log = LoggerFactory.getLogger(Waiter.class);
@@ -21,7 +23,7 @@ public class Waiter {
 
     public UUID placeOrder() {
         Order order = new Order();
-        order.orderId = UUID.randomUUID();
+        order.orderId = newUUID();
         order.expires = Instant.now().plusSeconds(15);
         order.tableNumber = ThreadLocalRandom.current().nextInt(1, 20);
         order.dodgy = ThreadLocalRandom.current().nextBoolean();
@@ -38,7 +40,7 @@ public class Waiter {
             order.items.add(iceCream);
         }
 
-        OrderPlaced message = new OrderPlaced(order, UUID.randomUUID(), null);
+        OrderPlaced message = new OrderPlaced(order, newUUID(), null);
         log.info("[{}] Placing an order", message.correlationId);
         publisher.publish(message);
         return order.orderId;

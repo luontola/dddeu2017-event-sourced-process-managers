@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static dddeu2017.espm.util.Util.newUUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.instanceOf;
@@ -21,17 +22,17 @@ public class EatFirstMidgetTest {
 
     private final FakePublisher publisher = new FakePublisher();
     private final Order order = new Order();
-    private final UUID correlationId = UUID.randomUUID();
+    private final UUID correlationId = newUUID();
 
     @Test
     public void when_food_is_cooked_in_time() {
         EatFirstMidget midget = new EatFirstMidget();
         midget.setPublisher(publisher);
-        midget.handle(new OrderPlaced(order, correlationId, UUID.randomUUID()));
+        midget.handle(new OrderPlaced(order, correlationId, newUUID()));
         MessageBase timeout = publisher.getTimeoutMessage();
         publisher.clear();
 
-        midget.handle(new OrderCooked(order, correlationId, UUID.randomUUID()));
+        midget.handle(new OrderCooked(order, correlationId, newUUID()));
         midget.handle(timeout);
 
         assertThat(publisher.published, contains(instanceOf(PriceOrder.class)));
@@ -41,7 +42,7 @@ public class EatFirstMidgetTest {
     public void when_food_is_not_cooked_in_time() {
         EatFirstMidget midget = new EatFirstMidget();
         midget.setPublisher(publisher);
-        midget.handle(new OrderPlaced(order, correlationId, UUID.randomUUID()));
+        midget.handle(new OrderPlaced(order, correlationId, newUUID()));
         MessageBase timeout = publisher.getTimeoutMessage();
         publisher.clear();
 
