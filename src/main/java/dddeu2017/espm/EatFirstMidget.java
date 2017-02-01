@@ -46,8 +46,8 @@ public class EatFirstMidget implements Handler<MessageBase> {
 
     private void handle(OrderPlaced message) {
         publisher.publish(new CookFood(message.order, message.correlationId, message.id));
-        publisher.publish(new PublishAt(Instant.now().plusSeconds(5),
-                new CookingTimedOut(message.order, message.correlationId, message.id),
+        publisher.publish(new PublishAt(Instant.now().plusSeconds(10),
+                new CookingTimedOut(message.order, 1, message.correlationId, message.id),
                 message.correlationId, message.id));
     }
 
@@ -55,14 +55,22 @@ public class EatFirstMidget implements Handler<MessageBase> {
         if (cooked) {
             return;
         }
+        if (message.tries >= 3) {
+            log.info("[{}] Tried to cook 3 times, giving up", message.correlationId);
+            return;
+        }
         log.info("[{}] Retry cooking", message.correlationId);
         publisher.publish(new CookFood(message.order, message.correlationId, message.id));
-        publisher.publish(new PublishAt(Instant.now().plusSeconds(5),
-                new CookingTimedOut(message.order, message.correlationId, message.id),
+        publisher.publish(new PublishAt(Instant.now().plusSeconds(10),
+                new CookingTimedOut(message.order, message.tries + 1, message.correlationId, message.id),
                 message.correlationId, message.id));
     }
 
     private void handle(OrderCooked message) {
+        if (cooked) {
+            log.info("[{}] Already cooked before", message.correlationId);
+            return;
+        }
         cooked = true;
         publisher.publish(new PriceOrder(message.order, message.correlationId, message.id));
     }
